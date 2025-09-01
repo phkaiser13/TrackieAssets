@@ -1,0 +1,64 @@
+# Dockerfile for Development (multi-stage)
+# This Dockerfile provides a consistent development environment for the Trackie project.
+
+# --- Builder Stage ---
+# This stage installs all necessary build tools and dependencies for C++, Rust, and Python.
+FROM ubuntu:22.04 as builder
+
+# Avoid interactive prompts
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install base dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    cmake \
+    git \
+    curl \
+    python3.10 \
+    python3-pip \
+    clang-format \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Rust
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+ENV PATH="/root/.cargo/bin:${PATH}"
+
+# Install Python dependencies
+COPY TLLM/bindings/python_tools/requirements.txt /tmp/requirements.txt
+RUN pip3 install --no-cache-dir -r /tmp/requirements.txt
+
+# --- Optional CUDA Builder Stage ---
+# This stage can be used if you need to build with CUDA support.
+# To use it: docker build --target cuda-builder -t trackie-dev-cuda .
+FROM nvidia/cuda:12.1.1-devel-ubuntu22.04 as cuda-builder
+
+# Install base dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    cmake \
+    git \
+    curl \
+    python3.10 \
+    python3-pip \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Rust
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+ENV PATH="/root/.cargo/bin:${PATH}"
+
+# --- Runtime Stage ---
+# This stage creates a smaller image with only the necessary runtime dependencies.
+# It's intended for deploying the compiled application.
+FROM ubuntu:22.04 as runtime
+
+# Install runtime dependencies
+RUN apt-get update && apt-get install -y \
+    libstdc++6 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy compiled artifacts from the builder stage
+# COPY --from=builder /path/to/your/compiled/binary /usr/local/bin/
+
+WORKDIR /app
+
+CMD ["/bin/bash"]
