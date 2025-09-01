@@ -1,0 +1,25 @@
+# --- Arquivo de Configuração do Conjunto de Dados YOLO ---
+#
+# Este arquivo define o caminho para o seu conjunto de dados e os nomes das classes
+# que você deseja detectar.
+#
+# IMPORTANTE: Modifique a seção 'names' para corresponder às classes do seu projeto.
+# O ID da classe (0, 1, 2, etc.) deve corresponder ao <class_id> nos seus
+# arquivos de anotação .txt.
+
+# Caminho para o diretório raiz do dataset.
+# O Ultralytics resolverá este caminho relativo à sua localização.
+path: ./datasets/yolo_custom
+
+# Caminhos para as imagens de treino e validação, relativos ao 'path' acima.
+train: images/train
+val: images/val
+# test: images/test  # Descomente se você tiver um conjunto de teste separado.
+
+# Nomes das classes - EDITE ESTA SEÇÃO!
+names:
+  0: person
+  1: car
+  2: traffic_light
+  3: truck
+  4: bicycle
