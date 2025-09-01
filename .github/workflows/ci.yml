@@ -1,0 +1,98 @@
+name: CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  lint:
+    name: Lint Codebase
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install Python linters
+        run: pip install flake8 black
+
+      - name: Run Python Linters
+        run: |
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          black --check .
+
+      - name: Placeholder for C++/Rust Linters
+        run: |
+          echo "TODO: Add steps for clang-format and rustfmt."
+          echo "This would typically involve installing the tools and running them."
+
+  build:
+    name: Build & Test (${{ matrix.os }}, ${{ matrix.target }})
+    needs: lint
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        target: [cpu, cuda] # ROCm would require self-hosted runners
+        exclude:
+          # Exclude CUDA from macOS for now, as it's not supported
+          - os: macos-latest
+            target: cuda
+      fail-fast: false
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Build Environment (Placeholder)
+        run: |
+          echo "Setting up build environment for OS: ${{ matrix.os }}, Target: ${{ matrix.target }}"
+          # Add steps to install dependencies like CMake, C++ compiler, Rust, CUDA toolkit, etc.
+
+      - name: Configure Project (Placeholder)
+        run: |
+          echo "Configuring project with CMake..."
+          cmake -B build -DTRACKIE_BUILD_TARGET=${{ matrix.target }}
+
+      - name: Build Project (Placeholder)
+        run: |
+          echo "Building project..."
+          cmake --build build --config Release
+
+      - name: Run Unit Tests (Placeholder)
+        run: |
+          echo "Running unit tests..."
+          cd build
+          ctest -C Release --output-on-failure
+
+  smoke-test:
+    name: Conversion & Inference Smoke Test
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Download sample weights (Placeholder)
+        run: |
+          echo "Downloading sample weights..."
+          # In a real scenario, this would pull from a release or cloud storage
+          mkdir -p weights-for-test
+          touch weights-for-test/model.pt
+
+      - name: Run ONNX conversion script (Placeholder)
+        run: |
+          echo "Testing ONNX conversion..."
+          python3 common/scripts/convert_to_onnx.py --input weights-for-test/model.pt --output weights-for-test/model.onnx
+
+      - name: Run C++ inference example (Placeholder)
+        run: |
+          echo "Building and running C++ inference smoke test..."
+          # This would require building the example first
+          echo "Build successful."
+          echo "Inference successful."
