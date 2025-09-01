@@ -1,0 +1,66 @@
+# ===================================================================
+# Configuration for ASR (Whisper) Fine-Tuning
+# ===================================================================
+
+# -- Project and Model Definition --
+# model_name: The Whisper model from Hugging Face to be fine-tuned.
+# output_dir: Directory where the fine-tuned model and processor will be saved.
+model_name: "openai/whisper-tiny.en"
+output_dir: "./models/whisper_finetuned"
+
+# -- Dataset Configuration --
+# dataset_name: The dataset from Hugging Face Hub.
+# dataset_subset: The language or subset identifier (e.g., 'en' for English in Common Voice).
+# audio_column: The name of the column containing the audio data.
+# text_column: The name of the column containing the transcription.
+# train_split: The split to use for training. Can use slicing, e.g., 'train[:100]' for a small test.
+# val_split: The split to use for validation/evaluation.
+dataset:
+  name: "mozilla-foundation/common_voice_11_0"
+  subset: "en"
+  audio_column: "audio"
+  text_column: "sentence"
+  train_split: "train+validation" # Using a small slice for quick demo runs
+  val_split: "test"
+
+# -- Processor and Tokenizer Configuration --
+# language: The language of the audio data. This must match the model's language.
+# task: The ASR task. Can be 'transcribe' (to the same language) or 'translate' (to English).
+processor:
+  language: "english"
+  task: "transcribe"
+
+# -- Hardware and Performance --
+# device: The device to run training on ('auto', 'cuda', 'mps', 'cpu').
+#         'auto' will delegate to Accelerate/Transformers.
+device: "auto"
+
+# -- Training Hyperparameters (via Seq2SeqTrainingArguments) --
+# per_device_train_batch_size: Batch size per GPU.
+# gradient_accumulation_steps: Accumulate gradients for an effective larger batch size.
+# learning_rate: The initial learning rate.
+# warmup_steps: Number of steps for linear warmup.
+# max_steps: Total number of training steps.
+# per_device_eval_batch_size: Batch size for evaluation.
+# logging_steps: Log metrics every N steps.
+# eval_steps: Perform evaluation every N steps.
+# save_steps: Save a checkpoint every N steps.
+training_args:
+  per_device_train_batch_size: 16
+  gradient_accumulation_steps: 1
+  learning_rate: 1.0e-5
+  warmup_steps: 500
+  max_steps: 4000
+  gradient_checkpointing: true
+  fp16: true # Use fp16 for faster training on compatible GPUs
+  per_device_eval_batch_size: 8
+  generation_max_length: 225
+  save_steps: 1000
+  eval_steps: 1000
+  logging_steps: 25
+  output_dir: "./models/whisper_finetuned/checkpoints"
+  save_total_limit: 2 # Only keep the last 2 checkpoints
+  load_best_model_at_end: true
+  metric_for_best_model: "wer"
+  greater_is_better: false
+  report_to: "none"

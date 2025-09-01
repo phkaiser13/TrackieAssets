@@ -1,0 +1,74 @@
+# ===================================================================
+# Configuration for LLM (Mistral-7B) Fine-Tuning using QLoRA
+# ===================================================================
+
+# -- Project and Model Definition --
+# model_name: The base model from Hugging Face to be fine-tuned.
+# output_dir: Directory where the fine-tuned adapter and final merged model will be saved.
+# base_model_name: "mistralai/Mistral-7B-v0.1"
+base_model_name: "unsloth/mistral-7b-v0.3-bnb-4bit"
+output_dir: "./models/mistral_finetuned"
+
+# -- Dataset Configuration --
+# dataset_name: The dataset from Hugging Face Hub or a path to a local file/directory.
+# text_column: The name of the column in the dataset that contains the text to be trained on.
+# split: The dataset split to use for training (e.g., 'train', 'train[:90%]', etc.).
+dataset_name: "stingning/ultrachat"
+text_column: "text"
+split: "train"
+max_seq_length: 2048 # Max sequence length for tokenizer.
+
+# -- Hardware and Performance --
+# device: The device to run training on. Should be 'cuda' for QLoRA.
+#         'auto' will delegate to Accelerate/Transformers.
+device: "auto"
+
+# -- Quantization Configuration (for QLoRA) --
+# load_in_4bit: Enables 4-bit quantization via bitsandbytes.
+# bnb_4bit_quant_type: Quantization type, 'nf4' (Normal Float 4) is recommended.
+# bnb_4bit_compute_dtype: The compute dtype for the base model during training.
+#                         'torch.bfloat16' is recommended for Ampere GPUs and newer.
+# bnb_4bit_use_double_quant: Uses a second quantization after the first to save more memory.
+quantization:
+  load_in_4bit: true
+  bnb_4bit_quant_type: "nf4"
+  bnb_4bit_compute_dtype: "bfloat16"
+  bnb_4bit_use_double_quant: true
+
+# -- LoRA (Low-Rank Adaptation) Configuration --
+# lora_r: The rank of the update matrices. Higher rank means more parameters to train.
+# lora_alpha: The scaling factor for the LoRA updates (alpha / r).
+# lora_dropout: Dropout probability for LoRA layers.
+# target_modules: The modules of the base model to apply LoRA to. 'all-linear' is a good default.
+lora:
+  r: 16
+  alpha: 32
+  dropout: 0.05
+  target_modules: "all-linear"
+
+# -- Training Hyperparameters (via Hugging Face Trainer) --
+# per_device_train_batch_size: Batch size per GPU.
+# gradient_accumulation_steps: Number of steps to accumulate gradients before updating weights.
+#                              Effective batch size = batch_size * gradient_accumulation_steps.
+# learning_rate: The initial learning rate for the AdamW optimizer.
+# optim: The optimizer to use (e.g., 'paged_adamw_8bit').
+# logging_steps: Log training metrics every N steps.
+# max_steps: Total number of training steps. If -1, determined by num_train_epochs.
+# num_train_epochs: Total number of training epochs.
+# lr_scheduler_type: The learning rate scheduler to use. 'cosine' is a good default.
+# warmup_ratio: Ratio of training steps used for a linear warmup.
+training_args:
+  per_device_train_batch_size: 2
+  gradient_accumulation_steps: 4
+  learning_rate: 2.0e-4
+  optim: "paged_adamw_8bit"
+  logging_steps: 25
+  max_steps: -1
+  num_train_epochs: 1
+  lr_scheduler_type: "cosine"
+  warmup_ratio: 0.03
+  fp16: false # Must be false for bfloat16 compute dtype
+  bf16: true  # Set to true for Ampere GPUs
+  output_dir: "./models/mistral_finetuned/checkpoints" # Trainer requires its own output dir
+  save_strategy: "epoch"
+  report_to: "none" # can be "tensorboard", "wandb" etc.

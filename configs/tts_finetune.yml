@@ -1,0 +1,54 @@
+# ===================================================================
+# Configuration for TTS (Piper) Fine-Tuning
+# ===================================================================
+
+# -- Project and Model Definition --
+# base_model_path: Path to the .ckpt file of the pre-trained Piper model to fine-tune from.
+#                  This is the most crucial setting for fine-tuning.
+# output_dir: Directory where the final .onnx model and other artifacts will be saved.
+base_model_path: "./models/piper_base/pt_BR-faber-medium.ckpt"
+output_dir: "./models/tts_finetuned"
+
+# -- Piper Training Orchestration --
+# piper_training_dir: Path to the cloned piper-training repository.
+#                     The script will execute train.py from this directory.
+piper_training_dir: "./piper-training"
+
+# -- Dataset Configuration --
+# dataset_dir: Path to the directory containing the custom voice dataset.
+#              The dataset should be in LJSpeech format (a 'wavs' subdirectory and a 'metadata.csv').
+# dataset_format: The format of the dataset. Currently, only 'ljspeech' is supported by the wrapper.
+# validation_split: Percentage of the dataset to use for validation (e.g., 0.1 for 10%).
+dataset:
+  dir: "./datasets/tts_custom"
+  format: "ljspeech"
+  validation_split: 0.1
+
+# -- Hardware and Performance --
+# accelerator: The accelerator to use ('cpu', 'gpu', 'tpu', 'mps').
+# devices: Number of devices to use (e.g., 1 for a single GPU).
+# precision: Training precision ('32', '16', 'bf16'). '16-mixed' is good for GPUs.
+hardware:
+  accelerator: "gpu"
+  devices: 1
+  precision: "16-mixed"
+
+# -- Training Hyperparameters --
+# These parameters are passed directly to the piper-training script.
+# See the piper-training documentation for more details on each parameter.
+#
+# epochs: Total number of training epochs.
+# batch_size: Number of audio samples per batch. Adjust based on VRAM.
+# learning_rate: The initial learning rate.
+# quality: The quality of the output model ('low', 'medium', 'high', 'x-high').
+#          Higher quality means a larger model and longer training time.
+training_params:
+  epochs: 100
+  batch_size: 16
+  learning_rate: 1e-4
+  quality: "medium"
+
+# -- Phonemization Configuration --
+# speaker_id: The speaker ID to assign in the model config (0 is usually fine).
+phonemization:
+  speaker_id: 0
