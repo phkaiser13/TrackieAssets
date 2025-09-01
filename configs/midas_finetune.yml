@@ -1,0 +1,37 @@
+# ===================================================================
+# Configuration for MiDaS (DPT) Fine-Tuning
+# ===================================================================
+
+# -- Project and Model Definition --
+# model_name: The DPT model from Hugging Face to be fine-tuned.
+# output_dir: Directory where the fine-tuned model and processor will be saved.
+model_name: "Intel/dpt-swinv2-tiny-256"
+output_dir: "./models/midas_finetuned"
+
+# -- Dataset Configuration --
+# train_dir: Path to the training dataset directory.
+#            Should contain 'rgb' and 'depth' subdirectories.
+# val_dir: Path to the validation dataset directory.
+#          Should contain 'rgb' and 'depth' subdirectories.
+train_dir: "./datasets/midas_custom/train"
+val_dir: "./datasets/midas_custom/val"
+
+# -- Hardware and Performance --
+# device: The device to run training on. Can be 'cuda', 'mps', or 'cpu'.
+#         Set to 'auto' to let the script detect the best available device.
+# num_workers: Number of worker threads for data loading.
+device: "auto"
+num_workers: 4
+
+# -- Training Hyperparameters --
+# epochs: Total number of training epochs.
+# batch_size: Number of images per batch. Adjust based on GPU VRAM.
+# learning_rate: The initial learning rate for the AdamW optimizer.
+epochs: 15
+batch_size: 4
+learning_rate: 1e-5
+
+# -- Optimizer and Scheduler --
+# (Currently hard-coded as AdamW in the script, but can be made configurable)
+# optimizer: "AdamW"
+# lr_scheduler: "None" # e.g., "StepLR", "CosineAnnealingLR"

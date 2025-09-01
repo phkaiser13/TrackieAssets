@@ -1,0 +1,50 @@
+# ===================================================================
+# Configuration for YOLOv5/v8 Training
+# ===================================================================
+
+# -- Project and Model Definition --
+project_name: "runs/yolo_training"
+model_name: "yolov5nu.pt"
+
+# -- Dataset Configuration --
+dataset:
+  # data_yaml: Path to the .yaml file describing the dataset.
+  #            This file contains paths to train/val image directories and class names.
+  data_yaml: "yolo_custom_data.yaml"
+
+# -- Hardware and Performance --
+hardware:
+  # device: The device to run training on. Can be 'cuda', 'mps', or 'cpu'.
+  #         Set to 'auto' to let the script detect the best available device.
+  device: "auto"
+  # workers: Number of worker threads for data loading.
+  workers: 8
+
+# -- Training Hyperparameters --
+training_hyperparameters:
+  # epochs: Total number of training epochs.
+  epochs: 150
+  # batch_size: Number of images per batch. Adjust based on GPU VRAM.
+  #             -1 means auto-batch size calculation.
+  batch_size: 16
+  # img_size: The size (height and width) to which images are resized.
+  img_size: 640
+  # patience: Number of epochs to wait for improvement before early stopping.
+  patience: 25
+  # optimizer: Optimizer to use. E.g., 'SGD', 'Adam', 'AdamW'. 'auto' lets Ultralytics decide.
+  optimizer: 'auto'
+  # lr0: Initial learning rate.
+  lr0: 0.01
+  # lrf: Final learning rate (lr0 * lrf).
+  lrf: 0.01
+
+# -- Augmentation and Regularization --
+augmentation:
+  # augment: (Ultralytics default) enable image augmentation
+  augment: true
+  # dropout: regularization dropout
+  dropout: 0.0
+  # mixup: intensity of mixup augmentation
+  mixup: 0.0
+  # copy_paste: intensity of copy-paste augmentation
+  copy_paste: 0.0
