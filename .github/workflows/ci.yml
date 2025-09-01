@@ -38,11 +38,11 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
-        target: [cpu, cuda] # ROCm would require self-hosted runners
+        target: [cpu, cuda-12] # rocm-5 would require self-hosted runners
         exclude:
-          # Exclude CUDA from macOS for now, as it's not supported
+          # Exclude CUDA from macOS, as it's not supported
           - os: macos-latest
-            target: cuda
+            target: cuda-12
       fail-fast: false
     runs-on: ${{ matrix.os }}
     steps:
@@ -96,3 +96,25 @@ jobs:
           # This would require building the example first
           echo "Build successful."
           echo "Inference successful."
+
+  publish:
+    name: Publish Release Artifacts
+    if: startsWith(github.ref, 'refs/tags/v') # Only run on version tags
+    needs: [build, smoke-test]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Download all build artifacts (Placeholder)
+        run: |
+          echo "Downloading artifacts from previous jobs..."
+          # In a real workflow, you would use actions/download-artifact
+          mkdir -p release_assets
+
+      - name: Package and Publish (Placeholder)
+        run: |
+          echo "Packaging artifacts (weights, models, etc.)..."
+          # This would involve creating archives, etc.
+          echo "Publishing to GitHub Releases..."
+          # This would use a tool like gh CLI or an action to upload assets

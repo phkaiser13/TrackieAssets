@@ -1,0 +1,19 @@
+# Python dependencies for Trackie tooling
+# Used for data processing, model conversion, and testing.
+
+# Core libraries for ML operations
+torch
+onnx
+onnxruntime
+
+# For LLM tooling (e.g., from Hugging Face)
+transformers
+sentencepiece
+
+# General utilities
+numpy
+tqdm
+
+# Linters and formatters (for local dev)
+flake8
+black
