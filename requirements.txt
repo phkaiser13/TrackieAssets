@@ -1,0 +1,29 @@
+# Core requirements for YOLOv5/v8 training and ONNX export.
+# PyTorch should be installed separately based on your CUDA version.
+# See: https://pytorch.org/get-started/locally/
+
+ultralytics>=8.0.0
+onnx>=1.14.0
+onnxruntime-gpu>=1.16.0 # For NVIDIA GPU inference. Use 'onnxruntime' for CPU or Apple Silicon
+onnxsim>=0.4.33 # To simplify the exported ONNX model
+
+# General utilities
+numpy>=1.23.0
+matplotlib>=3.7.0
+tqdm>=4.64.0
+py-yaml>=6.0
+pandas>=1.5.0 # Often useful for handling results
+seaborn>=0.12.0 # For prettier plots
+
+# MiDaS (DPT) specific requirements
+timm>=0.9.0
+transformers>=4.30.0
+scipy>=1.10.0
+
+# Audio Pipeline Requirements
+pvporcupine==3.0.2 # Picovoice Wake Word Engine
+piper-tts==1.2.0   # Piper Text-to-Speech
+sounddevice==0.4.6 # Python PortAudio wrapper for audio I/O
+
+# Vision Processing Requirements
+opencv-python-headless==4.8.0.76 # Para processamento de imagem sem GUI
